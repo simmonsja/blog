@@ -1,0 +1,22 @@
+project:
+  type: website
+  render:
+    - "*.qmd"
+
+website:
+  title: "Joshua Simmons"
+  navbar:
+    left:
+      - icon: github
+        href: https://github.com/simmonsja/
+      - icon: twitter
+        href: https://bsky.app/profile/jasimm.bsky.social
+format:
+  html:
+    theme: flatly
+    css: styles.css
+    mainfont: Libre Franklin
+    monofont: Fira Code
+
+
+

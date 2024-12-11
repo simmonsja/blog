@@ -1,0 +1,23 @@
+---
+listing:
+    contents: posts
+    sort: "date desc"
+    type: default
+    categories: true
+    sort-ui: false
+    filter-ui: false
+page-layout: full
+title-block-banner: false
+---
+
+```{r echo=FALSE}
+welcome_message <- "\U0047\U006F\U006F\U0064 \U0064\U0061\U0079 \U1F643"
+about_message <- "This is just a little site to hold my posts."
+```
+
+```{r}
+welcome_message |> print()
+about_message |> print()
+```
+
+<br>

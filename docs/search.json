@@ -1,0 +1,37 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Joshua Simmons",
+    "section": "",
+    "text": "welcome_message |&gt; print()\n\n[1] \"Good day 🙃\"\n\nabout_message |&gt; print()\n\n[1] \"This is just a little site to hold my posts.\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nStreamflow decomposition with mgcv\n\n\n\n\n\n\nR\n\n\nGAM\n\n\n\n\n\n\n\n\n\nJul 4, 2024\n\n\nJoshua Simmons\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this blog"
+  },
+  {
+    "objectID": "posts/mgcv/01_timeseries_with_mgcv.html",
+    "href": "posts/mgcv/01_timeseries_with_mgcv.html",
+    "title": "Streamflow decomposition with mgcv",
+    "section": "",
+    "text": "In this notebook we will explore the use of Generalised Additive Models (GAMs) for timeseries data using the mgcv package. There are many great resources on GAMs (see the “Further reading” section for a start), the idea of this notebook is to really guide readers towards these more comprehensive works. To this end we will show the power of GAMs and some of the potential pitfalls (in particular when it comes to timeseries data) in an example that will hopefully resonate more for those with a background in water.\nTo make things easier we will be using synthetic data which will allow us to explore the GAM fitting in a controlled way. We will be using a synthetic streamflow dataset which we aim to disentangle into the various components which contribute the overall signal.\nAs a strand to follow through the analysis, we will set the aim of find the underlying time trend that is present beyond the influence that can be accounted for between the other climatic variables."
+  },
+  {
+    "objectID": "posts/mgcv/01_timeseries_with_mgcv.html#explore-the-data",
+    "href": "posts/mgcv/01_timeseries_with_mgcv.html#explore-the-data",
+    "title": "Streamflow decomposition with mgcv",
+    "section": "2.1 Explore the data",
+    "text": "2.1 Explore the data\nLets plot the variables (both the target and the covariates) that we have available to us (all monthly):\n\nrainfall: mm monthly sum\nSOI: Southern Oscillation Index\nmoy: month of the year (1-12 before scaling)\ntime: months from start of the series\nflow: monthly mean streamflow (target)\nlog_flow: log of target\n\nYou can see that the target variable flow is given in ML, however the covariates have all been scaled to be between 0 and 1. Lets plot these up and see what we are working with.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nOur streamflow is clearly correlated to rainfall as one might expect however it is unclear the influence of broader climatic variability (in this case represented by SOI) or if there are any other persistent trends in the data beyond the effect of SOI."
+  },
+  {
+    "objectID": "posts/mgcv/01_timeseries_with_mgcv.html#here-comes-the-rain",
+    "href": "posts/mgcv/01_timeseries_with_mgcv.html#here-comes-the-rain",
+    "title": "Streamflow decomposition with mgcv",
+    "section": "4.1 Here comes the rain",
+    "text": "4.1 Here comes the rain\nWe still haven’t explored what we could strongly suspect to be the main driver of streamflow variability: rainfall-runoff processes. We expect this to have some nonlinearity, clearly we are grossly simplifying the processes in the catchment, in particular with respect to groundwater interactions. Of course to let you in on a secret, in this example we have employed nonlinearity for this term when creating our synthetic data. So we add a smooth on monthly rainfall (s(rain)).\nIn addition we add in the impact of longer term climatic variability on the streamflow. In this dataset we capture this through the Southern Oscillation Index (SOI) which we interpret as the effect of longer periods of wet and dry on the catchment which contribute to the overall streamflow signal. For example, we might expect say soil moisture to be lower after extended dry periods leading to less streamflow for a given amount of rainfall compared to times with waterlogged soil. Here we introduce another smooth on this term.\n\nm4 &lt;- gam(\n    log_flow ~ s(time) + s(moy, bs=\"cc\") + s(rain) + s(SOI),\n    data = streamflow_data,\n    family = gaussian(link=\"identity\")\n)\nsummary(m4)\n\n\nFamily: gaussian \nLink function: identity \n\nFormula:\nlog_flow ~ s(time) + s(moy, bs = \"cc\") + s(rain) + s(SOI)\n\nParametric coefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)  1.13651    0.01954   58.15   &lt;2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nApproximate significance of smooth terms:\n          edf Ref.df      F p-value    \ns(time) 3.151  3.905   3.56 0.00723 ** \ns(moy)  6.570  8.000  30.33 &lt; 2e-16 ***\ns(rain) 3.160  3.973 592.26 &lt; 2e-16 ***\ns(SOI)  3.034  3.832  97.17 &lt; 2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nR-sq.(adj) =  0.881   Deviance explained = 88.5%\nGCV = 0.19462  Scale est. = 0.18793   n = 492\n\nappraise(m4)\n\n\n\n\n\n\n\ndraw(m4)\n\n\n\n\n\n\n\npred_plot &lt;- plot_model_prediction(m4, streamflow_data, exp_bool = T)\nwrap_plots(\n    pred_plot,\n    pred_plot + scale_y_log10(),\n    ncol = 1\n)\n\n\n\n\n\n\n\nwrap_plots(\n    pred_plot,\n    draw(derivatives(m4, select=\"s(time)\"), add_change = TRUE, change_type = \"sizer\"),\n    ncol = 1\n)\n\n\n\n\n\n\n\n\nWe have a really good fit now, we are explaining a lot of the variance (R-sq.(adj) = 0.881). We have some interesting and realistic looking smooths on the new variables of rainfall and SOI with low uncertainty. The SOI smooth looks reasonable, during periods of high SOI (La Niña) we might expect wetter conditions compared to periods of low SOI (El Niño). The smooths are all determined to be significant by mgcv but note our time smooth has changed from m3, though again with p=0.00723.\nBut all is not well with our time smooth. We use the gam.check() diagnostic to check our model. Most of the plots will be familiar from our previous dalliance with the appriase() function. However, we also have additional information on the complexity of the smooths. Briefly, by increasing the number of knots available for a spline to fit data, we can increase the ability of the function to take on very complex shapes. The basis dimension checking (see the returned text) is returning that something is off about the s(time) smooth. It’s indicating that we may need to increase the number of maximum knots in the smooth above the default k=10 to fully explore the space of possible function fits. You can see ?choose.k for more information on this diagnostic and we will explore the implications of this below.\n\ngam.check(m4)\n\n\n\n\n\n\n\n\n\nMethod: GCV   Optimizer: magic\nSmoothing parameter selection converged after 6 iterations.\nThe RMS GCV score gradient at convergence was 8.345812e-07 .\nThe Hessian was positive definite.\nModel rank =  36 / 36 \n\nBasis dimension (k) checking results. Low p-value (k-index&lt;1) may\nindicate that k is too low, especially if edf is close to k'.\n\n          k'  edf k-index p-value    \ns(time) 9.00 3.15    0.23  &lt;2e-16 ***\ns(moy)  8.00 6.57    1.04    0.80    \ns(rain) 9.00 3.16    0.95    0.14    \ns(SOI)  9.00 3.03    0.97    0.21    \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1"
+  }
+]

@@ -6,6 +6,8 @@ project:
 
 website:
   title: "Joshua Simmons"
+  google-analytics:
+    tracking_id: "G-03KZZS8MH5"
   navbar:
     left:
       - icon: github

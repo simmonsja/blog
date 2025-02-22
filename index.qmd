@@ -11,7 +11,7 @@ title-block-banner: false
 ---
 
 ```{r echo=FALSE}
-welcome_message <- "\U0047\U006F\U006F\U0064 \U0064\U0061\U0079 \U1F643"
+welcome_message <- "\U0047\U006F\U006F\U0064 \U0064\U0061\U0079"
 about_message <- "This is just a little site to hold my posts."
 ```
 

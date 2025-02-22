@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/blr/stormerosion_bayesian_linear_regression.html",
       "/posts/mgcv/01_timeseries_with_mgcv.html"
     ]
   }

@@ -631,7 +631,9 @@ We've lifted our performance a fair bit at the exposed location and a little at 
 
 Just like that we have stumbled into the the beginnings of a hierarchical model here, by a loose definition. Some parameters share information from the various groupings in the data and some are informed seperately per group. We can get a little bit smarter about how we do this, in time...
 
-For now though, let's do this model justice and return to fitting the way the authors intended. Only Bayesian this time. There are three locations and, as the authors identified, there are small but important differences in the response behaviours at these locations. 
+## Going our seperate ways
+
+As we are coming to the end though, let's do this model justice and return to fitting the way the authors intended. Only Bayesian this time. There are three locations and, as the authors identified, there are small but important differences in the response behaviours at these locations. 
 
 ::: {.callout-note title="Coarse sand graining" appearance="simple" icon=false collapse=true}
 At least this is true at the level at which we are describing our processes. There is no difference in the fundamental physics at each location. Quarks be quarks and do quark stuff no matter where they are found on the beach. And perhaps physics based models might resolve the processes down to a level that can replicate the different observed behaviours without resorting to tuning parameter values separately at each location (though IMHO this has been too hard to achieve with any of these sorts of models that I've worked with). Definitely though at the coarse grained level we are describing the processes at with our simple linear model, we expect the parameter fits to be different at each location to describe the different magnitudes of response to the same offshore storms.

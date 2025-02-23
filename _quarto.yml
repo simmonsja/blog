@@ -17,7 +17,7 @@ format:
   html:
     theme: flatly
     css: styles.css
-    mainfont: Libre Franklin
+    mainfont: Montserrat
     monofont: Fira Code
 
 

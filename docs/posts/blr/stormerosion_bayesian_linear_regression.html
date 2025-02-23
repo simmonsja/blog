@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.37">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -71,10 +71,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-29e2c20b02301cfff04dc8050bf30c7e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-53bd9b9cd4bf4abd36484a28d66b5fdf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
 <link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
 <link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
@@ -338,7 +338,7 @@ Note
 <li><code>Dpo</code>: average wave direction during the storm</li>
 </ul>
 <p>The raw data:</p>
-<div id="24a7f17c" class="cell" data-execution_count="2">
+<div id="07ee4c6b" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display">
 <div>
 
@@ -463,7 +463,7 @@ Show me the code
 <div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Alright you sick puppy, welcome to the data wrangling.</p>
-<div id="b6372c78" class="cell" data-execution_count="3">
+<div id="56415dde" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the target variables</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>target_variable_names <span class="op">=</span> [ <span class="st">"dW_exposed"</span>, <span class="st">"dW_partially"</span>, <span class="st">"dW_sheltered"</span>]</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># now our covariates and Onset as a sanity check</span></span>
@@ -472,7 +472,7 @@ Show me the code
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>prestorm_vars <span class="op">=</span> [<span class="st">"Wpre</span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(_[<span class="dv">2</span>:]) <span class="cf">for</span> _ <span class="kw">in</span> target_variable_names]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We are going to make a little format adjustment just to make filtering between locations easier. In this dataset there are three separate locations (along Narrabeen Beach) at which shoreline change was measured for each storm (named here as “exposed”, “partially”, and “sheltered”). We are not going to dwell on the differences (you can read the paper if you like), but at a base level we expect the storm response to be slightly different at each of these locations. These are provided as separate columns in the original data, and here we rework the dataframe to have only a single target variable (<code>dW</code>) and convert the locations into a single column as a categorical variable.</p>
-<div id="6b94aeaf" class="cell" data-execution_count="4">
+<div id="85ccda23" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># first take only the columns we need</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> raw_data[covariate_vars<span class="op">+</span>prestorm_vars<span class="op">+</span>target_variable_names].copy()</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># convert Onset to datetime</span></span>
@@ -581,7 +581,7 @@ Show me the code
 </div>
 <p>You should be able to see (e.g., from the <code>Wpre</code> column) the 1999-02-05 storm (row 92 in <code>raw_data</code>) correctly flowing from <code>raw_data</code> through to <code>df</code> below (rows 0 - 2, i.e., three total as there are three locations <code>exposed</code>, <code>partially</code> and <code>sheltered</code>).</p>
 <p>We should take this time to scale our covariates, the authors did too. Of course we could skip this step but you can see that e.g., <code>Eocum</code> is orders of magnitude higher than <code>WLres</code>. Leaving the data in this state would make it really hard to interpret the coefficients of our model relative to each other for a start. Secondly, our model fitting relies on gradients, and these can get whacky if your variables range over orders of magnitude. Be kind. Show your model some TLC and it’ll make your life easier in return (and if you don’t believe me, <a href="https://mc-stan.org/docs/stan-users-guide/efficiency-tuning.html#standardizing-predictors">see the “Standardising predictors” section here</a>).</p>
-<div id="fa18f488" class="cell" data-execution_count="5">
+<div id="5cf88288" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># find the max and min of each column - we will normalise</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># as the authors did, per location</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>scale_max_vals <span class="op">=</span> df.groupby(<span class="st">"location"</span>).<span class="bu">max</span>()</span>
@@ -601,7 +601,7 @@ Show me the code
 </div>
 </div>
 <p>A few moments later… we have our data standardised and in the format we want:</p>
-<div id="ae75b319" class="cell" data-execution_count="6">
+<div id="2fa1fa4f" class="cell" data-execution_count="6">
 <div class="cell-output cell-output-display">
 <div>
 
@@ -750,7 +750,7 @@ Note
 <p>Luckily for us, the model we specified above and our assumptions about the data generating process in this case readily give rise to a likelihood. And even luckier for us, when we use modern software to specify and fit our model, we can get it without even breaking a sweat.</p>
 <p>We will use a Probabilistic Programming Language (PPL) of which there are many options including <a href="https://num.pyro.ai/en/latest/index.html"><code>NumPyro</code></a>, <a href="https://mc-stan.org"><code>Stan</code></a> and <a href="https://www.pymc.io/welcome.html"><code>PyMC</code></a>. PPLs provide a way to specify Bayesian models, and use algorithms (such as NUTS) to sample and estimate the posterior.</p>
 <p>We’re going to look at how this works in a code example below (using <code>NumPyro</code>) which will hopefully help to illuminate this. I am going to generate some synthetic data that relates a variable <code>X</code> to target <code>y</code> with a simple linear relationship plus gaussian noise (<code>np.random.randn</code>).</p>
-<div id="4f6fa702" class="cell" data-execution_count="8">
+<div id="79720373" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make dummy data for X, then generate y data using:</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># y = 0.1 X + 0.2 + N(0, 0.1)</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.random.randn(<span class="dv">100</span>)</span>
@@ -771,7 +771,7 @@ Show me the code
 <div id="callout-7" class="callout-7-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>What you’ll see below is how to specify this type of model in <code>NumPyro</code>. Don’t get too hung up on this. We will be using the much simpler <code>Bambi</code> below and I’ll leave the proper explanation of <code>NumPyro</code> to a separate post.</p>
-<div id="7882cd49" class="cell" data-execution_count="9">
+<div id="b21b9a11" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="annotated-cell-10"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-10-1"><a href="#annotated-cell-10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># build a simple model for this in NumPyro</span></span>
 <span id="annotated-cell-10-2"><a href="#annotated-cell-10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> model(X, y<span class="op">=</span><span class="va">None</span>):</span>
 <span id="annotated-cell-10-3"><a href="#annotated-cell-10-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Define priors</span></span>
@@ -817,7 +817,7 @@ Note
 </div>
 </div>
 </div>
-<div id="8cbe5bab" class="cell" data-execution_count="10">
+<div id="fe5933ec" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Log-likelihood code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># generate 10 possible solutions</span></span>
@@ -839,7 +839,7 @@ Note
 </div>
 </div>
 <p>You can see below that candidate models with parameter values that lie closer to our true model parameters (<span class="math inline">\(0.1 * x + 0.2\)</span>) have higher log-likelihoods. As we would expect right, they fit the data better. So there we have it, a method for assessing goodness of fit. We’re well on our way to a posterior with much of the hard work having been done for us, goodee.</p>
-<div id="fe7bd503" class="cell" data-execution_count="11">
+<div id="607f9afb" class="cell" data-execution_count="11">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -882,7 +882,7 @@ Note
 <li>describe the parameters in our model and give prior distributions for each (though <code>Bambi</code> will adopt some default priors if you’re feeling lucky)</li>
 <li>specify the model that, given the data and the parameters, estimates the target (y)</li>
 </ul>
-<div id="97117378" class="cell" data-execution_count="12">
+<div id="e1b05274" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="annotated-cell-2"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-2-1"><a href="#annotated-cell-2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define our model - a smoothie mixing all locations into one</span></span>
 <span id="annotated-cell-2-2"><a href="#annotated-cell-2-2" aria-hidden="true" tabindex="-1"></a>mod_smoothie <span class="op">=</span> bmb.Model(</span>
 <a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-2-3" class="code-annotation-target"><a href="#annotated-cell-2-3" aria-hidden="true" tabindex="-1"></a>        formula <span class="op">=</span> <span class="st">"dW ~ 1 + Eocum + Wpre + Dpo + Tpeak + WLres"</span>,</span>
@@ -936,7 +936,7 @@ Note
 </div>
 </div>
 <p>You’re so close now to seeing model output, but following a <a href="https://doi.org/10.48550/arXiv.2011.01808">good Bayesian workflow</a> we’re going to check our priors first. Remember we set out with the goal of merely shaving the edges off infinity to give a sensible range for the model to consider. Lets wee how we did. Luckily <code>Bambi</code> provides a convenience functions to this end. We plot the priors for each parameter first with <code>.plot_priors()</code>. You can see in practice how much weight we are giving various values, as we said above telling the model we are quite sure the values lie between -2 and 2.</p>
-<div id="78df92ed" class="cell" data-execution_count="13">
+<div id="a8f37be0" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the prior distributions themselves </span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>mod_smoothie.plot_priors(figsize <span class="op">=</span> (<span class="dv">9</span>, <span class="dv">8</span>))</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># make things a little less cosy</span></span>
@@ -950,13 +950,13 @@ Sampling: [Dpo, Eocum, Intercept, Tpeak, WLres, Wpre, dW, sigma]</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><a href="stormerosion_bayesian_linear_regression_files/figure-html/cell-14-output-2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="stormerosion_bayesian_linear_regression_files/figure-html/cell-14-output-2.png" width="690" height="662" class="figure-img"></a></p>
+<p><a href="stormerosion_bayesian_linear_regression_files/figure-html/cell-14-output-2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="stormerosion_bayesian_linear_regression_files/figure-html/cell-14-output-2.png" width="689" height="662" class="figure-img"></a></p>
 </figure>
 </div>
 </div>
 </div>
 <p>The second convenience function we used is <code>prior_predictive()</code>. This is kind of cool. Because of our conceptualisation of the model as representing a data generating process we can simulate observations straight off the bat using only our priors. So we can see below that for the top 10 storms, our prior model predicts values of shoreline change will be less than 1000s of meters. Our model predicts a mean of around 0 and the coloured bars show the 89% credible intervals for our predictions (more on this below). So again, we’re not being too restrictive and we definitely cover all the reasonable parameter values. However, we’ve helped the sampler into a reasonable search space.</p>
-<div id="b1487759" class="cell" data-execution_count="14">
+<div id="de94ac64" class="cell" data-execution_count="14">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -966,7 +966,7 @@ Sampling: [Dpo, Eocum, Intercept, Tpeak, WLres, Wpre, dW, sigma]</code></pre>
 </div>
 </div>
 <p>And now we come to our beautiful posterior distributions which we can examine using the <code>arviz</code> package. The posterior distributions are shown for each of our variables listed on the y axis. 89% credible intervals are shown, as well as the interquartile range slightly bolder, and the median value with a dot.</p>
-<div id="461d5b59" class="cell" data-execution_count="15">
+<div id="e5fcf2e3" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> az.plot_forest(</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    fit_smoothie,</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    var_names <span class="op">=</span> [<span class="st">"~sigma"</span>, <span class="st">"~mu"</span>],</span>
@@ -996,7 +996,7 @@ Show me example code
 </div>
 <div id="callout-9" class="callout-9-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<div id="f1a7e4e2" class="cell" data-execution_count="17">
+<div id="5d607575" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the trace to see how sampling progressed </span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>az.plot_trace(</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    fit_smoothie,</span>
@@ -1376,55 +1376,55 @@ Coordinates:
 Data variables:
     Dpo        float64 8B 1.0
     Eocum      float64 8B 1.0
-    Intercept  float64 8B 0.9999
-    Tpeak      float64 8B 1.0
-    WLres      float64 8B 0.9999
-    Wpre       float64 8B 1.001
-    sigma      float64 8B 1.001
-    mu         (__obs__) float64 5kB 1.0 0.9998 0.9998 1.0 ... 1.0 0.9999 1.002</pre><div class="xr-wrap" style="display:none"><div class="xr-header"><div class="xr-obj-type">xarray.Dataset</div></div><ul class="xr-sections"><li class="xr-section-item"><input id="section-906bd666-f341-45ca-b901-492e023065eb" class="xr-section-summary-in" type="checkbox" disabled=""><label for="section-906bd666-f341-45ca-b901-492e023065eb" class="xr-section-summary" title="Expand/collapse section">Dimensions:</label><div class="xr-section-inline-details"><ul class="xr-dim-list"><li><span class="xr-has-index">__obs__</span>: 597</li></ul></div><div class="xr-section-details"></div></li><li class="xr-section-item"><input id="section-a43111cf-1a57-4607-bde7-a91b2d710f7a" class="xr-section-summary-in" type="checkbox" checked=""><label for="section-a43111cf-1a57-4607-bde7-a91b2d710f7a" class="xr-section-summary">Coordinates: <span>(1)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-var-name"><span class="xr-has-index">__obs__</span></div><div class="xr-var-dims">(__obs__)</div><div class="xr-var-dtype">int64</div><div class="xr-var-preview xr-preview">0 1 2 3 4 5 ... 592 593 594 595 596</div><input id="attrs-d31de219-2c7b-41f2-9c77-be0c36d1cc7d" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-d31de219-2c7b-41f2-9c77-be0c36d1cc7d" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-b52086bf-849e-477e-b98c-6be4e3a06455" class="xr-var-data-in" type="checkbox"><label for="data-b52086bf-849e-477e-b98c-6be4e3a06455" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array([  0,   1,   2, ..., 594, 595, 596])</pre></div></li></ul></div></li><li class="xr-section-item"><input id="section-d958873e-4234-49c0-85c0-3b74bdbe9976" class="xr-section-summary-in" type="checkbox" checked=""><label for="section-d958873e-4234-49c0-85c0-3b74bdbe9976" class="xr-section-summary">Data variables: <span>(8)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-var-name"><span>Dpo</span></div><div class="xr-var-dims">()</div><div class="xr-var-dtype">float64</div><div class="xr-var-preview xr-preview">1.0</div><input id="attrs-b38a45da-d4da-49cd-8b67-f6126a5b84a9" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-b38a45da-d4da-49cd-8b67-f6126a5b84a9" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-9cf03f0b-9671-410d-b018-5dcf82a32c9e" class="xr-var-data-in" type="checkbox"><label for="data-9cf03f0b-9671-410d-b018-5dcf82a32c9e" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(1.00046802)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span>Eocum</span></div><div class="xr-var-dims">()</div><div class="xr-var-dtype">float64</div><div class="xr-var-preview xr-preview">1.0</div><input id="attrs-cd2571c0-110e-4294-a0a4-a1045b828997" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-cd2571c0-110e-4294-a0a4-a1045b828997" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-663b3788-2c9d-42ee-9aef-4efe4d99b80c" class="xr-var-data-in" type="checkbox"><label for="data-663b3788-2c9d-42ee-9aef-4efe4d99b80c" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(1.00044893)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span>Intercept</span></div><div class="xr-var-dims">()</div><div class="xr-var-dtype">float64</div><div class="xr-var-preview xr-preview">0.9999</div><input id="attrs-863b92bb-1095-4002-b831-67a636aeafde" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-863b92bb-1095-4002-b831-67a636aeafde" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-0ad9c548-b503-4e57-bab2-cdb7bfc0c222" class="xr-var-data-in" type="checkbox"><label for="data-0ad9c548-b503-4e57-bab2-cdb7bfc0c222" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(0.99990171)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span>Tpeak</span></div><div class="xr-var-dims">()</div><div class="xr-var-dtype">float64</div><div class="xr-var-preview xr-preview">1.0</div><input id="attrs-c1e49536-baa4-4752-bcef-0907c9cf85ac" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-c1e49536-baa4-4752-bcef-0907c9cf85ac" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-b6f18cbc-c99b-4300-b1e6-0f345c521030" class="xr-var-data-in" type="checkbox"><label for="data-b6f18cbc-c99b-4300-b1e6-0f345c521030" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(1.00012802)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span>WLres</span></div><div class="xr-var-dims">()</div><div class="xr-var-dtype">float64</div><div class="xr-var-preview xr-preview">0.9999</div><input id="attrs-5f8201f5-e994-4de4-ae9e-4933053508db" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-5f8201f5-e994-4de4-ae9e-4933053508db" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-ddb46d52-b26a-4727-b855-4ed96702dabf" class="xr-var-data-in" type="checkbox"><label for="data-ddb46d52-b26a-4727-b855-4ed96702dabf" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(0.99992773)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span>Wpre</span></div><div class="xr-var-dims">()</div><div class="xr-var-dtype">float64</div><div class="xr-var-preview xr-preview">1.001</div><input id="attrs-4f4be782-096f-4c85-96b0-15f88a59a198" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-4f4be782-096f-4c85-96b0-15f88a59a198" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-4777858a-2140-47f0-9f13-f4f6b4dd8dac" class="xr-var-data-in" type="checkbox"><label for="data-4777858a-2140-47f0-9f13-f4f6b4dd8dac" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(1.00090182)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span>sigma</span></div><div class="xr-var-dims">()</div><div class="xr-var-dtype">float64</div><div class="xr-var-preview xr-preview">1.001</div><input id="attrs-1c9f36b8-0d67-47c7-9bf3-e6db66162742" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-1c9f36b8-0d67-47c7-9bf3-e6db66162742" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-2be4a248-142f-4cd0-8bf2-155c51d004ae" class="xr-var-data-in" type="checkbox"><label for="data-2be4a248-142f-4cd0-8bf2-155c51d004ae" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(1.00072529)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span>mu</span></div><div class="xr-var-dims">(__obs__)</div><div class="xr-var-dtype">float64</div><div class="xr-var-preview xr-preview">1.0 0.9998 0.9998 ... 0.9999 1.002</div><input id="attrs-ec5af3b2-6d1b-4b98-86ce-407378cb8e45" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-ec5af3b2-6d1b-4b98-86ce-407378cb8e45" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-7554c94e-5432-480b-ac79-8e5864d9ef29" class="xr-var-data-in" type="checkbox"><label for="data-7554c94e-5432-480b-ac79-8e5864d9ef29" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array([0.99997504, 0.99980658, 0.99982423, 1.00007654, 0.99983579,
-       0.99983254, 0.99978432, 1.00017471, 1.00141612, 1.00146211,
-       0.9999919 , 0.99988111, 1.00090635, 1.00086152, 1.00037063,
-       1.00009624, 1.00024289, 1.00010658, 1.00007966, 0.99979662,
-       0.99992251, 0.99985616, 0.99973015, 0.99994318, 0.99986431,
-       0.99987112, 0.9998885 , 0.99989444, 1.00076908, 1.00020493,
-       0.99986078, 1.00003462, 0.99994907, 1.00002644, 1.00027618,
-       1.00019441, 1.00036479, 1.0001504 , 0.99980552, 0.9997791 ,
-       0.99967308, 0.99991916, 0.99992457, 0.99981597, 0.99978621,
-       0.99995009, 0.99995847, 0.99990429, 0.99982612, 1.00036027,
-       1.00038132, 1.00059245, 1.00057183, 1.00086283, 1.00047239,
-       1.0007179 , 1.00019111, 1.00134684, 1.00136006, 1.00014252,
-       1.00015526, 0.99975618, 0.99973806, 1.00003299, 0.99972949,
-       0.9998048 , 0.99974759, 0.99999512, 1.00011839, 1.000449  ,
-       0.99980754, 1.00000798, 0.99987364, 1.00013824, 1.00018355,
-       0.99982641, 1.00009062, 1.00068653, 1.00044625, 1.00022544,
-       0.99987199, 1.00005151, 1.00007202, 1.0000809 , 1.00019122,
-       1.00043286, 1.00037402, 0.9997482 , 0.99999778, 1.00045749,
-       1.00165001, 1.00048892, 1.00017702, 0.99996669, 0.99999135,
-       1.00008308, 0.99989572, 0.99979148, 0.99991973, 1.00010745,
+    Intercept  float64 8B 1.001
+    Tpeak      float64 8B 0.9998
+    WLres      float64 8B 1.001
+    Wpre       float64 8B 1.0
+    sigma      float64 8B 0.9998
+    mu         (__obs__) float64 5kB 1.0 1.0 1.0 1.0 ... 1.002 1.001 1.001 1.0</pre><div class="xr-wrap" style="display:none"><div class="xr-header"><div class="xr-obj-type">xarray.Dataset</div></div><ul class="xr-sections"><li class="xr-section-item"><input id="section-67b4b5b2-f4a8-4d15-bbf3-13a583fac7aa" class="xr-section-summary-in" type="checkbox" disabled=""><label for="section-67b4b5b2-f4a8-4d15-bbf3-13a583fac7aa" class="xr-section-summary" title="Expand/collapse section">Dimensions:</label><div class="xr-section-inline-details"><ul class="xr-dim-list"><li><span class="xr-has-index">__obs__</span>: 597</li></ul></div><div class="xr-section-details"></div></li><li class="xr-section-item"><input id="section-dfd14604-63a1-4c75-9506-46d4e4dafa06" class="xr-section-summary-in" type="checkbox" checked=""><label for="section-dfd14604-63a1-4c75-9506-46d4e4dafa06" class="xr-section-summary">Coordinates: <span>(1)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-var-name"><span class="xr-has-index">__obs__</span></div><div class="xr-var-dims">(__obs__)</div><div class="xr-var-dtype">int64</div><div class="xr-var-preview xr-preview">0 1 2 3 4 5 ... 592 593 594 595 596</div><input id="attrs-1f6c0939-9603-41a3-b67e-ecf4d3562038" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-1f6c0939-9603-41a3-b67e-ecf4d3562038" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-7b1f9f9e-79a5-4bd4-9c4f-14c7a3062463" class="xr-var-data-in" type="checkbox"><label for="data-7b1f9f9e-79a5-4bd4-9c4f-14c7a3062463" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array([  0,   1,   2, ..., 594, 595, 596])</pre></div></li></ul></div></li><li class="xr-section-item"><input id="section-554e7992-3ff3-487e-b695-60480591654f" class="xr-section-summary-in" type="checkbox" checked=""><label for="section-554e7992-3ff3-487e-b695-60480591654f" class="xr-section-summary">Data variables: <span>(8)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-var-name"><span>Dpo</span></div><div class="xr-var-dims">()</div><div class="xr-var-dtype">float64</div><div class="xr-var-preview xr-preview">1.0</div><input id="attrs-18ff64f2-120e-4ec7-b025-674415354769" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-18ff64f2-120e-4ec7-b025-674415354769" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-59150888-213d-4687-9577-a1c104d7680a" class="xr-var-data-in" type="checkbox"><label for="data-59150888-213d-4687-9577-a1c104d7680a" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(1.00007597)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span>Eocum</span></div><div class="xr-var-dims">()</div><div class="xr-var-dtype">float64</div><div class="xr-var-preview xr-preview">1.0</div><input id="attrs-66471aca-2d2b-4136-ae59-065dabc3c9ac" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-66471aca-2d2b-4136-ae59-065dabc3c9ac" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-47887a72-2518-48a6-8d9f-79cd5bd554f7" class="xr-var-data-in" type="checkbox"><label for="data-47887a72-2518-48a6-8d9f-79cd5bd554f7" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(1.00012132)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span>Intercept</span></div><div class="xr-var-dims">()</div><div class="xr-var-dtype">float64</div><div class="xr-var-preview xr-preview">1.001</div><input id="attrs-6cabe04c-3a9f-43a8-8c9f-f720bc460633" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-6cabe04c-3a9f-43a8-8c9f-f720bc460633" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-dedb4f49-ba7b-4269-97f6-3c643b13d8be" class="xr-var-data-in" type="checkbox"><label for="data-dedb4f49-ba7b-4269-97f6-3c643b13d8be" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(1.00068942)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span>Tpeak</span></div><div class="xr-var-dims">()</div><div class="xr-var-dtype">float64</div><div class="xr-var-preview xr-preview">0.9998</div><input id="attrs-257e12cc-96be-489a-8062-c7c7589b920d" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-257e12cc-96be-489a-8062-c7c7589b920d" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-a7ca8292-14df-4127-a0ae-c2e880840033" class="xr-var-data-in" type="checkbox"><label for="data-a7ca8292-14df-4127-a0ae-c2e880840033" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(0.99976772)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span>WLres</span></div><div class="xr-var-dims">()</div><div class="xr-var-dtype">float64</div><div class="xr-var-preview xr-preview">1.001</div><input id="attrs-242336d8-0093-4138-a3d8-ae02c0ccfc44" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-242336d8-0093-4138-a3d8-ae02c0ccfc44" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-c926fdec-3639-4735-b077-acb8c42d5ec3" class="xr-var-data-in" type="checkbox"><label for="data-c926fdec-3639-4735-b077-acb8c42d5ec3" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(1.00051388)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span>Wpre</span></div><div class="xr-var-dims">()</div><div class="xr-var-dtype">float64</div><div class="xr-var-preview xr-preview">1.0</div><input id="attrs-ea701601-d143-44e8-9b71-3a4ad7d69b70" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-ea701601-d143-44e8-9b71-3a4ad7d69b70" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-668a47e2-6900-4aa2-a347-b3166904d46e" class="xr-var-data-in" type="checkbox"><label for="data-668a47e2-6900-4aa2-a347-b3166904d46e" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(1.00041399)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span>sigma</span></div><div class="xr-var-dims">()</div><div class="xr-var-dtype">float64</div><div class="xr-var-preview xr-preview">0.9998</div><input id="attrs-c7069774-3f32-494b-9b3c-82d22e63e89d" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-c7069774-3f32-494b-9b3c-82d22e63e89d" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-0feffe27-296e-455d-91d9-e1e7fe2d5fc1" class="xr-var-data-in" type="checkbox"><label for="data-0feffe27-296e-455d-91d9-e1e7fe2d5fc1" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(0.99982387)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span>mu</span></div><div class="xr-var-dims">(__obs__)</div><div class="xr-var-dtype">float64</div><div class="xr-var-preview xr-preview">1.0 1.0 1.0 1.0 ... 1.001 1.001 1.0</div><input id="attrs-9fc69a14-3734-4491-8a6c-c69c76f4e76b" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-9fc69a14-3734-4491-8a6c-c69c76f4e76b" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-b0ab8417-def0-436d-b438-6d91d44208bd" class="xr-var-data-in" type="checkbox"><label for="data-b0ab8417-def0-436d-b438-6d91d44208bd" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array([0.99997556, 1.00022804, 1.00013758, 0.99995399, 0.9999884 ,
+       0.99998302, 1.00009137, 1.00025071, 0.99997156, 0.99996843,
+       1.00010917, 1.0000977 , 1.00022686, 1.0002352 , 1.00132886,
+       1.00111436, 1.00094115, 1.00077197, 1.00078718, 1.00089102,
+       1.00002908, 0.99997518, 1.00012113, 1.00038208, 0.99988148,
+       0.9998672 , 1.00044931, 1.00084956, 1.00079217, 1.00004511,
+       1.0007936 , 1.0002469 , 1.00044224, 0.99990815, 1.00038522,
+       1.00015738, 1.00214035, 1.00148012, 1.00099913, 1.00049993,
+       1.00069177, 1.00044333, 1.00047247, 1.00037128, 1.00023534,
+       0.99997341, 0.99994447, 0.99984932, 0.99987876, 1.00017947,
+       1.00018499, 1.00023787, 1.00072389, 1.00031961, 1.00105629,
+       0.9998792 , 1.00022575, 1.00022105, 1.00086346, 0.9999827 ,
+       1.00052727, 1.00082328, 1.00015375, 1.00088006, 1.00041142,
+       1.00041014, 1.0006516 , 0.99985912, 0.99998156, 1.00002892,
+       1.00030806, 1.00068178, 1.00013322, 1.0000033 , 1.00067609,
+       1.00012742, 1.00072204, 1.00123333, 1.00016311, 1.00067821,
+       1.00020413, 1.00067916, 1.00091109, 1.00109898, 1.00123481,
+       1.00052246, 1.00063591, 0.99977845, 0.99980032, 1.00050552,
+       1.00238614, 1.00142073, 1.00107589, 0.99981671, 1.0000939 ,
+       0.9997353 , 1.00069077, 1.00028721, 1.0000788 , 1.00008987,
 ...
-       1.00050473, 1.00104678, 1.00059435, 0.99973626, 0.99975711,
-       1.00031861, 0.99961427, 0.99965979, 1.00016856, 1.00052698,
-       1.00019456, 1.00000011, 0.99980924, 0.99990767, 1.00007426,
-       1.00008011, 1.00005445, 1.00033611, 0.99990736, 1.00002433,
-       0.99985198, 0.99992531, 0.99984193, 1.00034092, 1.00003471,
-       1.00007416, 1.0003679 , 1.00003014, 0.99999049, 1.00025182,
-       1.00036828, 0.99993981, 1.00021072, 1.00015546, 1.000122  ,
-       0.99983791, 1.00049617, 1.00016704, 1.00006561, 1.00064377,
-       1.00017011, 0.99995815, 1.00045918, 1.00039799, 1.00000042,
-       1.0000111 , 0.99988457, 1.00030035, 1.00017288, 1.00027494,
-       1.000041  , 1.00002556, 1.00064358, 1.00022466, 1.00031148,
-       1.00039785, 1.00011317, 1.00013006, 1.00032625, 1.00025553,
-       1.00103953, 1.00032266, 1.00033538, 1.00057188, 0.99984652,
-       1.00020894, 0.99993203, 1.00023084, 1.00012038, 0.99981588,
-       0.9998084 , 0.99978845, 1.00042484, 1.00116296, 1.00129719,
-       1.00129138, 1.00025264, 1.00006046, 1.00027047, 1.00020994,
-       0.99978355, 0.99994929, 1.00002833, 0.99971389, 0.99967122,
-       0.99968235, 0.99990434, 1.00030815, 1.00018961, 0.99988249,
-       1.00004995, 1.00070353, 0.99995083, 0.99981455, 0.99999588,
-       0.99987359, 1.00226771])</pre></div></li></ul></div></li><li class="xr-section-item"><input id="section-ec77ce2d-a60c-434e-a369-46ce14a530e9" class="xr-section-summary-in" type="checkbox"><label for="section-ec77ce2d-a60c-434e-a369-46ce14a530e9" class="xr-section-summary">Indexes: <span>(1)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-index-name"><div>__obs__</div></div><div class="xr-index-preview">PandasIndex</div><div></div><input id="index-815e230c-e1db-4c7c-b77b-8ea19a92a702" class="xr-index-data-in" type="checkbox"><label for="index-815e230c-e1db-4c7c-b77b-8ea19a92a702" title="Show/Hide index repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-index-data"><pre>PandasIndex(Index([  0,   1,   2,   3,   4,   5,   6,   7,   8,   9,
+       1.00128711, 1.00102813, 1.00101546, 1.00017008, 1.00006697,
+       1.00068953, 1.00037119, 1.000516  , 1.00075267, 1.00054723,
+       1.00041223, 1.00070522, 1.00104863, 1.00107113, 1.00101126,
+       1.00071711, 1.00074743, 0.99987373, 1.00055105, 1.00033504,
+       0.99977871, 1.00018382, 0.99983032, 0.99986629, 0.99981835,
+       1.00017612, 1.00054254, 1.00067131, 1.00074047, 1.00058388,
+       1.00058845, 1.00040929, 1.00077197, 0.99991739, 1.00136198,
+       1.00116256, 0.9999811 , 1.00102256, 0.9997541 , 1.00128797,
+       1.00070418, 1.00010605, 1.00100779, 1.00097682, 1.00069986,
+       1.00075182, 0.99973482, 1.00020988, 1.00008793, 1.00061126,
+       1.00042381, 1.00038821, 1.00000362, 1.00020375, 1.00045437,
+       1.00054231, 1.00029169, 1.000343  , 0.9998633 , 1.00029631,
+       0.99996105, 1.00049534, 1.00052069, 1.00026037, 0.9999775 ,
+       1.00002571, 1.00105937, 1.00056642, 1.00054213, 0.99979237,
+       1.00110894, 1.00020671, 1.00011946, 1.00066635, 1.00087003,
+       1.00016067, 1.00141544, 0.99972491, 0.99996398, 0.99990736,
+       1.00104046, 1.00090165, 1.00071087, 1.00017055, 1.00069   ,
+       1.00051539, 1.00064899, 1.00130303, 1.00132237, 1.00101838,
+       1.00042324, 1.00047101, 1.00042355, 1.00163224, 1.00132391,
+       1.00134478, 1.00008354])</pre></div></li></ul></div></li><li class="xr-section-item"><input id="section-e10a21d3-bf78-412e-8a42-e51a793aa036" class="xr-section-summary-in" type="checkbox"><label for="section-e10a21d3-bf78-412e-8a42-e51a793aa036" class="xr-section-summary">Indexes: <span>(1)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-index-name"><div>__obs__</div></div><div class="xr-index-preview">PandasIndex</div><div></div><input id="index-3d932181-7ec1-4d12-877c-055b8fbfe1ae" class="xr-index-data-in" type="checkbox"><label for="index-3d932181-7ec1-4d12-877c-055b8fbfe1ae" title="Show/Hide index repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-index-data"><pre>PandasIndex(Index([  0,   1,   2,   3,   4,   5,   6,   7,   8,   9,
        ...
        587, 588, 589, 590, 591, 592, 593, 594, 595, 596],
-      dtype='int64', name='__obs__', length=597))</pre></div></li></ul></div></li><li class="xr-section-item"><input id="section-4f6d0d88-9075-437a-9be6-2e884a9059f8" class="xr-section-summary-in" type="checkbox" disabled=""><label for="section-4f6d0d88-9075-437a-9be6-2e884a9059f8" class="xr-section-summary" title="Expand/collapse section">Attributes: <span>(0)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><dl class="xr-attrs"></dl></div></li></ul></div></div>
+      dtype='int64', name='__obs__', length=597))</pre></div></li></ul></div></li><li class="xr-section-item"><input id="section-ed3729f3-e450-4e0f-8df6-27e374048850" class="xr-section-summary-in" type="checkbox" disabled=""><label for="section-ed3729f3-e450-4e0f-8df6-27e374048850" class="xr-section-summary" title="Expand/collapse section">Attributes: <span>(0)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><dl class="xr-attrs"></dl></div></li></ul></div></div>
 </div>
 <div class="cell-output cell-output-display">
 <div>
@@ -1438,7 +1438,7 @@ Data variables:
 </div>
 </div>
 <p>Finally, saving the best until last - we plot the predictions of the model versus the data and compare to the paper to make sure we are on the right track.</p>
-<div id="c49811e9" class="cell" data-execution_count="18">
+<div id="d301ea09" class="cell" data-execution_count="18">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1461,7 +1461,7 @@ Data variables:
 <h2 data-number="3.2" class="anchored" data-anchor-id="a-dash-more-complexity"><span class="header-section-number">3.2</span> A dash more complexity</h2>
 <p>As a next step, we could consider that the three locations respond in the same way to storms, but have a different average response. For example, we may think that the relationship between <span class="math inline">\(E_{o,cum}\)</span> and shoreline change, will be strongly positive (XX) at all locations. But that our predicted shoreline change for an average storm would be different when looking at a part of the beach that is sheltered/partially sheltered/exposed.</p>
 <p>This different mean response we can call a group level intercept, i.e., a different intercept for each of the three locations which form the different groups in our dataset.</p>
-<div id="1fe20d46" class="cell" data-execution_count="19">
+<div id="5f8da222" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="annotated-cell-5"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-5-1"><a href="#annotated-cell-5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit the group level intercept location smoothie model</span></span>
 <span id="annotated-cell-5-2"><a href="#annotated-cell-5-2" aria-hidden="true" tabindex="-1"></a>mod_glint_smoothie <span class="op">=</span> bmb.Model(</span>
 <a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-5-3" class="code-annotation-target"><a href="#annotated-cell-5-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"dW ~ 0 + location + Eocum + Wpre + Dpo + Tpeak + WLres"</span>,</span>
@@ -1493,7 +1493,7 @@ Data variables:
 </div>
 </div>
 <p>Lets see the difference to our old “smoothie” model where we simply blended the locations together.</p>
-<div id="12e9f0a0" class="cell" data-execution_count="20">
+<div id="fffc0f34" class="cell" data-execution_count="20">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1503,7 +1503,7 @@ Data variables:
 </div>
 </div>
 <p>Hey! Nice, you can see from the forest plot that the estimates for each parameter have barely changed, and that we now have those group level intercepts.</p>
-<div id="297b9b43" class="cell" data-execution_count="21">
+<div id="36497e8a" class="cell" data-execution_count="21">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1542,7 +1542,7 @@ Coarse sand graining
 </div>
 </div>
 <p>And so we bestow upon each location its own <span class="math inline">\(\beta\)</span>s for each covariate. Luckily our data are in a format that will make this very easy as we started to do above. If we specify to the model that it needs three parameters for each <span class="math inline">\(\beta\)</span>, we can use the corresponding <span class="math inline">\(\beta\)</span>s for each data point depending on its location. We tell this to <code>Bambi</code> with the following formula:</p>
-<div id="d46445f5" class="cell" data-execution_count="22">
+<div id="067d885f" class="cell" data-execution_count="22">
 <div class="sourceCode cell-code" id="annotated-cell-6"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-6-1"><a href="#annotated-cell-6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit the model separate parameters per location</span></span>
 <span id="annotated-cell-6-2"><a href="#annotated-cell-6-2" aria-hidden="true" tabindex="-1"></a>mod_separate <span class="op">=</span> bmb.Model(</span>
 <a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-6-3" class="code-annotation-target"><a href="#annotated-cell-6-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"dW ~ 0 + location + Eocum:location + Wpre:location +"</span> <span class="op">+</span></span>
@@ -1577,7 +1577,7 @@ Coarse sand graining
 \end{aligned}
 \]</span></p>
 <p>Lets look at our beautiful posterior distributions.</p>
-<div id="06168c11" class="cell" data-execution_count="25">
+<div id="9936cb8f" class="cell" data-execution_count="25">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1588,7 +1588,7 @@ Coarse sand graining
 </div>
 <p>I really like these plots, we see how the locations differ from each other in small but important ways. We can see locations at which we are more certain/uncertain of the effect of each covariate. We also see how these estimates pool together into a single <span class="math inline">\(\beta\)</span> for our “smoothie” model.</p>
 <p>Once more we plot the predictions and compare back to the paper to check that we recovered similar goodness of fit.</p>
-<div id="7298c4f3" class="cell" data-execution_count="27">
+<div id="d26f9c3f" class="cell" data-execution_count="27">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1609,7 +1609,7 @@ Coarse sand graining
 <section id="prediction-in-an-uncertain-world" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Prediction in an uncertain world</h1>
 <p>As we discussed up top, we have fit this model using an approach that embraced uncertainty at its core. We should make sure we are utilising that when presenting our predictions. Above I’ve been wasteful, throwing our posterior into the trash compactor to come up with a mean prediction for each point. But it doesn’t have to be this way, we value the posterior and the information contained therein, so lets summarise it and display it below.</p>
-<div id="4cbc93f9" class="cell" data-execution_count="28">
+<div id="a056dbae" class="cell" data-execution_count="28">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1643,7 +1643,7 @@ Coarse sand graining
 
 </main> <!-- /main -->
 <script type="application/vnd.jupyter.widget-state+json">
-{"state":{"135301848f684ea0a0fe05413c366780":{"model_module":"@jupyter-widgets/output","model_module_version":"1.0.0","model_name":"OutputModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/output","_model_module_version":"1.0.0","_model_name":"OutputModel","_view_count":null,"_view_module":"@jupyter-widgets/output","_view_module_version":"1.0.0","_view_name":"OutputView","layout":"IPY_MODEL_c2f642b1cb834323963389caa323eff8","msg_id":"","outputs":[{"data":{"text/html":"<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\">Sampling 4 chains, 0 divergences <span style=\"color: #008000; text-decoration-color: #008000\">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span style=\"color: #800080; text-decoration-color: #800080\">100%</span> <span style=\"color: #008080; text-decoration-color: #008080\">0:00:00</span> / <span style=\"color: #808000; text-decoration-color: #808000\">0:00:05</span>\n</pre>\n","text/plain":"Sampling 4 chains, 0 divergences \u001b[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[35m100%\u001b[0m \u001b[36m0:00:00\u001b[0m / \u001b[33m0:00:05\u001b[0m\n"},"metadata":{},"output_type":"display_data"}],"tabbable":null,"tooltip":null}},"3f5dbba9e18c4299a367ac6affc330c2":{"model_module":"@jupyter-widgets/output","model_module_version":"1.0.0","model_name":"OutputModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/output","_model_module_version":"1.0.0","_model_name":"OutputModel","_view_count":null,"_view_module":"@jupyter-widgets/output","_view_module_version":"1.0.0","_view_name":"OutputView","layout":"IPY_MODEL_70de2fd33c7c4c138232edf765b863df","msg_id":"","outputs":[{"data":{"text/html":"<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\">Sampling 4 chains, 0 divergences <span style=\"color: #008000; text-decoration-color: #008000\">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span style=\"color: #800080; text-decoration-color: #800080\">100%</span> <span style=\"color: #008080; text-decoration-color: #008080\">0:00:00</span> / <span style=\"color: #808000; text-decoration-color: #808000\">0:00:05</span>\n</pre>\n","text/plain":"Sampling 4 chains, 0 divergences \u001b[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[35m100%\u001b[0m \u001b[36m0:00:00\u001b[0m / \u001b[33m0:00:05\u001b[0m\n"},"metadata":{},"output_type":"display_data"}],"tabbable":null,"tooltip":null}},"53b00717163145699edccb2c82b398e2":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"70de2fd33c7c4c138232edf765b863df":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"c2f642b1cb834323963389caa323eff8":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"feb26ac753f84ca796ce0574d9bfcf1a":{"model_module":"@jupyter-widgets/output","model_module_version":"1.0.0","model_name":"OutputModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/output","_model_module_version":"1.0.0","_model_name":"OutputModel","_view_count":null,"_view_module":"@jupyter-widgets/output","_view_module_version":"1.0.0","_view_name":"OutputView","layout":"IPY_MODEL_53b00717163145699edccb2c82b398e2","msg_id":"","outputs":[{"data":{"text/html":"<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\">Sampling 4 chains, 0 divergences <span style=\"color: #008000; text-decoration-color: #008000\">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span style=\"color: #800080; text-decoration-color: #800080\">100%</span> <span style=\"color: #008080; text-decoration-color: #008080\">0:00:00</span> / <span style=\"color: #808000; text-decoration-color: #808000\">0:00:01</span>\n</pre>\n","text/plain":"Sampling 4 chains, 0 divergences \u001b[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[35m100%\u001b[0m \u001b[36m0:00:00\u001b[0m / \u001b[33m0:00:01\u001b[0m\n"},"metadata":{},"output_type":"display_data"}],"tabbable":null,"tooltip":null}}},"version_major":2,"version_minor":0}
+{"state":{"2879c7293f40486b968cb7daa790e996":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"5cb288eb52f349ce8ceee6b40928459e":{"model_module":"@jupyter-widgets/output","model_module_version":"1.0.0","model_name":"OutputModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/output","_model_module_version":"1.0.0","_model_name":"OutputModel","_view_count":null,"_view_module":"@jupyter-widgets/output","_view_module_version":"1.0.0","_view_name":"OutputView","layout":"IPY_MODEL_a3f278fe935844778e9f85cd7c6ea8ca","msg_id":"","outputs":[{"data":{"text/html":"<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\">Sampling 4 chains, 0 divergences <span style=\"color: #008000; text-decoration-color: #008000\">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span style=\"color: #800080; text-decoration-color: #800080\">100%</span> <span style=\"color: #008080; text-decoration-color: #008080\">0:00:00</span> / <span style=\"color: #808000; text-decoration-color: #808000\">0:00:05</span>\n</pre>\n","text/plain":"Sampling 4 chains, 0 divergences \u001b[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[35m100%\u001b[0m \u001b[36m0:00:00\u001b[0m / \u001b[33m0:00:05\u001b[0m\n"},"metadata":{},"output_type":"display_data"}],"tabbable":null,"tooltip":null}},"7948ab0b4e0f4f42ae08dc6fcf5f2d62":{"model_module":"@jupyter-widgets/output","model_module_version":"1.0.0","model_name":"OutputModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/output","_model_module_version":"1.0.0","_model_name":"OutputModel","_view_count":null,"_view_module":"@jupyter-widgets/output","_view_module_version":"1.0.0","_view_name":"OutputView","layout":"IPY_MODEL_8858de887d1f456bacb1faf32d8f6b10","msg_id":"","outputs":[{"data":{"text/html":"<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\">Sampling 4 chains, 0 divergences <span style=\"color: #008000; text-decoration-color: #008000\">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span style=\"color: #800080; text-decoration-color: #800080\">100%</span> <span style=\"color: #008080; text-decoration-color: #008080\">0:00:00</span> / <span style=\"color: #808000; text-decoration-color: #808000\">0:00:01</span>\n</pre>\n","text/plain":"Sampling 4 chains, 0 divergences \u001b[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[35m100%\u001b[0m \u001b[36m0:00:00\u001b[0m / \u001b[33m0:00:01\u001b[0m\n"},"metadata":{},"output_type":"display_data"}],"tabbable":null,"tooltip":null}},"7e15914bb78e43e193491bd7c6e270ae":{"model_module":"@jupyter-widgets/output","model_module_version":"1.0.0","model_name":"OutputModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/output","_model_module_version":"1.0.0","_model_name":"OutputModel","_view_count":null,"_view_module":"@jupyter-widgets/output","_view_module_version":"1.0.0","_view_name":"OutputView","layout":"IPY_MODEL_2879c7293f40486b968cb7daa790e996","msg_id":"","outputs":[{"data":{"text/html":"<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\">Sampling 4 chains, 0 divergences <span style=\"color: #008000; text-decoration-color: #008000\">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span style=\"color: #800080; text-decoration-color: #800080\">100%</span> <span style=\"color: #008080; text-decoration-color: #008080\">0:00:00</span> / <span style=\"color: #808000; text-decoration-color: #808000\">0:00:04</span>\n</pre>\n","text/plain":"Sampling 4 chains, 0 divergences \u001b[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[35m100%\u001b[0m \u001b[36m0:00:00\u001b[0m / \u001b[33m0:00:04\u001b[0m\n"},"metadata":{},"output_type":"display_data"}],"tabbable":null,"tooltip":null}},"8858de887d1f456bacb1faf32d8f6b10":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"a3f278fe935844778e9f85cd7c6ea8ca":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}}},"version_major":2,"version_minor":0}
 </script>
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
@@ -1727,6 +1727,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -1837,6 +1839,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
+      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
@@ -2063,7 +2066,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","descPosition":"bottom","closeEffect":"zoom","loop":false});
 (function() {
   let previousOnload = window.onload;
   window.onload = () => {
